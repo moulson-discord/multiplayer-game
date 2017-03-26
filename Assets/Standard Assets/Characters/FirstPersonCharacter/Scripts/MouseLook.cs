@@ -5,6 +5,7 @@ using UnityStandardAssets.CrossPlatformInput;
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     [Serializable]
+    [AddComponentMenu("Camera/MouseLook")]
     public class MouseLook
     {
         public float XSensitivity = 2f;

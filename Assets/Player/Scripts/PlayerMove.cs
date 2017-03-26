@@ -3,6 +3,12 @@ using UnityEngine.Networking;
 
 public class PlayerMove : NetworkBehaviour
 {
+    public float rotSpeed = 10.0f; //how fast the object should rotate
+    public float speed = 6.0F;
+    public float jumpSpeed = 8.0F;
+    public float gravity = 20.0F;
+    private Vector3 moveDirection = Vector3.zero;
+
     void Update()
     {
         if (!isLocalPlayer)
@@ -10,10 +16,25 @@ public class PlayerMove : NetworkBehaviour
             return;
         }
 
-        var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
-        var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
+        CharacterController controller = GetComponent<CharacterController>();
+        // is the controller on the ground?
+        if (controller.isGrounded)
+        {
+            //Feed moveDirection with input.
+            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveDirection = transform.TransformDirection(moveDirection);
+            //Multiply it by speed.
+            moveDirection *= speed;
+            //Jumping
+            if (Input.GetButton("Jump"))
+                moveDirection.y = jumpSpeed;
 
-        transform.Rotate(0, x, 0);
-        transform.Translate(0, 0, z);
+        }
+        //Applying gravity to the controller
+        moveDirection.y -= gravity * Time.deltaTime;
+        //Making the character move
+        controller.Move(moveDirection * Time.deltaTime);
+        transform.Rotate(new Vector3(- Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotSpeed);
+
     }
 }
